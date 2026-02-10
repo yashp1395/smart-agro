@@ -1,4 +1,4 @@
-vercel link : smart-agro-kappa.vercel.app
+vercel link : smart-agro-git-master-yashp1395s-projects.vercel.app
 
 
 
