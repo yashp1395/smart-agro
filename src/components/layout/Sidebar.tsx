@@ -62,4 +62,23 @@ const Sidebar: React.FC = () => {
   );
 };
 
+// src/components/layout/Sidebar.tsx
+
+// 1. Update the background of the sidebar here:
+<aside
+  className={cn(
+    "bg-blue-900 flex flex-col shrink-0 transition-all duration-300 relative shadow-xl", // Change this class
+    collapsed ? "w-[72px]" : "w-[260px]"
+  )}
+>
+
+...
+
+// 2. Update the background and border of the toggle button here:
+<button
+  onClick={() => setCollapsed(!collapsed)}
+  className="absolute -right-3.5 top-8 bg-blue-900 border border-blue-900 text-secondary-foreground rounded-full p-1.5 shadow-lg hover:bg-primary hover:text-primary-foreground transition-all"
+>
+
+  
 export default Sidebar;
