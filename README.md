@@ -1,4 +1,4 @@
-vercel link : smart-agro-git-master-yashp1395s-projects.vercel.app
+vercel link : https://smart-agro-git-master-yashp1395s-projects.vercel.app/
 
 
 
