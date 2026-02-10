@@ -26,7 +26,7 @@ const Sidebar: React.FC = () => {
   return (
     <aside
       className={cn(
-        "bg-[#064e3b] flex flex-col shrink-0 transition-all duration-300 relative shadow-xl",
+        "bg-[#450109] flex flex-col shrink-0 transition-all duration-300 relative shadow-xl",
         collapsed ? "w-[72px]" : "w-[260px]"
       )}
     >
