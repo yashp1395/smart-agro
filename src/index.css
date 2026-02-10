@@ -1,0 +1,81 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 120 20% 97%;
+    --foreground: 200 19% 18%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 200 19% 18%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 200 19% 18%;
+
+    --primary: 122 46% 33%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 14 20% 29%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 120 10% 92%;
+    --muted-foreground: 200 10% 40%;
+
+    --accent: 43 95% 56%;
+    --accent-foreground: 200 19% 18%;
+
+    --destructive: 0 65% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --info: 199 98% 41%;
+    --info-foreground: 0 0% 100%;
+
+    --success: 122 40% 45%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 33 100% 49%;
+    --warning-foreground: 200 19% 18%;
+
+    --border: 120 10% 88%;
+    --input: 120 10% 88%;
+    --ring: 122 46% 33%;
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 200 19% 18%;
+    --sidebar-primary: 122 46% 33%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 120 20% 95%;
+    --sidebar-accent-foreground: 200 19% 18%;
+    --sidebar-border: 120 10% 88%;
+    --sidebar-ring: 122 46% 33%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-roboto;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poppins', sans-serif;
+  }
+}
+
+@layer utilities {
+  .font-poppins {
+    font-family: 'Poppins', sans-serif;
+  }
+  .font-roboto {
+    font-family: 'Roboto', sans-serif;
+  }
+  .font-inter {
+    font-family: 'Inter', sans-serif;
+  }
+}
