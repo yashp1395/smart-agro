@@ -26,7 +26,7 @@ const Sidebar: React.FC = () => {
   return (
     <aside
       className={cn(
-        "bg-secondary flex flex-col shrink-0 transition-all duration-300 relative shadow-xl",
+        "bg-[#064e3b] flex flex-col shrink-0 transition-all duration-300 relative shadow-xl",
         collapsed ? "w-[72px]" : "w-[260px]"
       )}
     >
@@ -39,10 +39,10 @@ const Sidebar: React.FC = () => {
             className={({ isActive }) =>
               cn(
                 "flex items-center gap-3 px-3 py-3 rounded-xl text-[15px] font-medium transition-all duration-200",
-                "hover:bg-secondary-foreground/10 hover:translate-x-0.5",
+                "hover:bg-white/10 hover:translate-x-0.5",
                 isActive
                   ? "bg-primary text-primary-foreground shadow-md pl-2.5"
-                  : "text-secondary-foreground/70 pl-2.5"
+                  : "text-white/70 pl-2.5"
               )
             }
           >
@@ -54,7 +54,7 @@ const Sidebar: React.FC = () => {
 
       <button
         onClick={() => setCollapsed(!collapsed)}
-        className="absolute -right-3.5 top-8 bg-secondary border border-secondary text-secondary-foreground rounded-full p-1.5 shadow-lg hover:bg-primary hover:text-primary-foreground transition-all"
+        className="absolute -right-3.5 top-8 bg-[#064e3b] border border-[#064e3b] text-white rounded-full p-1.5 shadow-lg hover:bg-primary hover:text-primary-foreground transition-all"
       >
         {collapsed ? <ChevronRight className="h-3.5 w-3.5" /> : <ChevronLeft className="h-3.5 w-3.5" />}
       </button>
@@ -62,7 +62,4 @@ const Sidebar: React.FC = () => {
   );
 };
 
-
-
-  
 export default Sidebar;
