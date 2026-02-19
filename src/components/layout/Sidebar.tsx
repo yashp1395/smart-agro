@@ -3,12 +3,13 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { NavLink } from "react-router-dom";
 import {
   LayoutDashboard, FlaskConical, Wheat, Bug, TrendingUp,
-  Store, FileText, Settings, ChevronLeft, ChevronRight, Landmark,
+  Store, FileText, Settings, ChevronLeft, ChevronRight, Landmark, UserCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { path: "/", icon: LayoutDashboard, label: "nav.dashboard" },
+  { path: "/profile", icon: UserCircle, label: "nav.profile" },
   { path: "/soil", icon: FlaskConical, label: "nav.soil" },
   { path: "/crop", icon: Wheat, label: "nav.crop" },
   { path: "/disease", icon: Bug, label: "nav.disease" },

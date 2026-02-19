@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from "@/i18n/LanguageContext";
+import { FarmLocationProvider } from "@/contexts/FarmLocationContext";
 import MainLayout from "@/components/layout/MainLayout";
 import Dashboard from "./pages/Dashboard";
 import SoilAnalysis from "./pages/SoilAnalysis";
@@ -14,6 +15,7 @@ import MarketAdvisor from "./pages/MarketAdvisor";
 import GovSchemes from "./pages/GovSchemes";
 import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
+import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -21,7 +23,8 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <LanguageProvider>
-      <TooltipProvider>
+      <FarmLocationProvider>
+        <TooltipProvider>
         <Toaster />
         <Sonner />
         <BrowserRouter>
@@ -35,12 +38,14 @@ const App = () => (
               <Route path="/market" element={<MarketAdvisor />} />
               <Route path="/schemes" element={<GovSchemes />} />
               <Route path="/reports" element={<Reports />} />
+              <Route path="/profile" element={<Profile />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </MainLayout>
         </BrowserRouter>
-      </TooltipProvider>
+        </TooltipProvider>
+      </FarmLocationProvider>
     </LanguageProvider>
   </QueryClientProvider>
 );

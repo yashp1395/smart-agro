@@ -13,6 +13,7 @@ const langLabels: Record<Language, string> = { en: "English", hi: "हिंद�
 
 const routeNames: Record<string, string> = {
   "/": "nav.dashboard",
+  "/profile": "nav.profile",
   "/soil": "nav.soil",
   "/crop": "nav.crop",
   "/disease": "nav.disease",
@@ -82,8 +83,12 @@ const Header: React.FC = () => {
             <ChevronDown className="h-3 w-3" />
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuItem>{t("common.profile")}</DropdownMenuItem>
-            <DropdownMenuItem>{t("nav.settings")}</DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to="/profile" className="cursor-pointer">{t("common.profile")}</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to="/settings" className="cursor-pointer">{t("nav.settings")}</Link>
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

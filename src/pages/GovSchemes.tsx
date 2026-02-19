@@ -22,6 +22,7 @@ const schemesData = {
       status: "active",
       icon: IndianRupee,
       category: "income",
+      link: "https://pmkisan.gov.in/",
     },
     {
       id: 2,
@@ -31,6 +32,7 @@ const schemesData = {
       status: "active",
       icon: Sprout,
       category: "input",
+      link: "https://soilhealth.dac.gov.in/",
     },
     {
       id: 3,
@@ -40,6 +42,7 @@ const schemesData = {
       status: "active",
       icon: ShieldCheck,
       category: "insurance",
+      link: "https://pmfby.gov.in/",
     },
     {
       id: 4,
@@ -49,6 +52,7 @@ const schemesData = {
       status: "active",
       icon: HandCoins,
       category: "credit",
+      link: "https://www.pmjdy.gov.in/scheme",
     },
     {
       id: 5,
@@ -58,6 +62,7 @@ const schemesData = {
       status: "active",
       icon: Tractor,
       category: "equipment",
+      link: "https://agrimachinery.nic.in/",
     },
     {
       id: 6,
@@ -67,6 +72,7 @@ const schemesData = {
       status: "active",
       icon: Droplets,
       category: "irrigation",
+      link: "https://pmksy.gov.in/",
     },
   ],
   nuksanBharpai: [
@@ -76,6 +82,7 @@ const schemesData = {
       desc: { en: "Compensation for crop loss due to floods and excessive rainfall. Up to ₹13,500/hectare for food crops and ₹18,000/hectare for commercial crops.", hi: "बाढ़ और अत्यधिक वर्षा से फसल नुकसान के लिए मुआवजा। खाद्य फसलों के लिए ₹13,500/हेक्टेयर और वाणिज्यिक फसलों के लिए ₹18,000/हेक्टेयर तक।", mr: "पूर आणि अतिवृष्टीमुळे पीक नुकसानासाठी भरपाई. अन्नधान्य पिकांसाठी ₹13,500/हेक्टर आणि नगदी पिकांसाठी ₹18,000/हेक्टर." },
       amount: "₹13,500-18,000/ha",
       trigger: "flood",
+      link: "https://pmfby.gov.in/",
     },
     {
       id: 102,
@@ -83,6 +90,7 @@ const schemesData = {
       desc: { en: "Relief package for drought-declared districts. Includes input subsidy of ₹6,800/hectare for rainfed areas and ₹13,500/hectare for irrigated areas.", hi: "सूखा घोषित जिलों के लिए राहत पैकेज। वर्षा आधारित क्षेत्रों के लिए ₹6,800/हेक्टेयर और सिंचित क्षेत्रों के लिए ₹13,500/हेक्टेयर इनपुट सब्सिडी।", mr: "दुष्काळग्रस्त जिल्ह्यांसाठी मदत पॅकेज. कोरडवाहू क्षेत्रासाठी ₹6,800/हेक्टर आणि सिंचित क्षेत्रासाठी ₹13,500/हेक्टर." },
       amount: "₹6,800-13,500/ha",
       trigger: "drought",
+      link: "https://drought.gov.in/",
     },
     {
       id: 103,
@@ -90,6 +98,7 @@ const schemesData = {
       desc: { en: "Immediate relief for crop damage due to hailstorm and unseasonal rainfall. ₹6,800/hectare for rainfed and ₹13,500/hectare for irrigated land.", hi: "ओलावृष्टि और बेमौसम वर्षा से फसल क्षति के लिए तत्काल राहत। वर्षा आधारित के लिए ₹6,800/हेक्टेयर और सिंचित भूमि के लिए ₹13,500/हेक्टेयर।", mr: "गारपीट आणि अवकाळी पावसामुळे पीक नुकसानीसाठी तात्काळ मदत. कोरडवाहूसाठी ₹6,800/हेक्टर आणि सिंचित जमिनीसाठी ₹13,500/हेक्टर." },
       amount: "₹6,800-13,500/ha",
       trigger: "hailstorm",
+      link: "https://pmfby.gov.in/",
     },
     {
       id: 104,
@@ -97,6 +106,7 @@ const schemesData = {
       desc: { en: "Compensation when government declares pest/disease epidemic in a region. Covers cost of pesticides and crop loss partially.", hi: "जब सरकार किसी क्षेत्र में कीट/रोग महामारी घोषित करती है तो मुआवजा। कीटनाशकों की लागत और फसल हानि का आंशिक कवरेज।", mr: "सरकारने एखाद्या प्रदेशात कीड/रोग साथ जाहीर केल्यावर भरपाई. कीटकनाशकांचा खर्च आणि पीक नुकसानीचा आंशिक भरपाई." },
       amount: "Variable",
       trigger: "pest",
+      link: "https://agricoop.nic.in/",
     },
   ],
 };
@@ -192,8 +202,13 @@ const GovSchemes: React.FC = () => {
                       <CheckCircle className="h-3 w-3 mr-1 text-success" />
                       {t("schemes.active_status")}
                     </Badge>
-                    <Button size="sm" variant="ghost" className="text-primary text-xs group-hover:bg-primary/5">
-                      {t("schemes.apply")} <ArrowRight className="h-3.5 w-3.5 ml-1" />
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="text-primary text-xs group-hover:bg-primary/5"
+                      onClick={() => window.open(scheme.link, "_blank", "noopener,noreferrer")}
+                    >
+                      {t("schemes.apply")} <ExternalLink className="h-3.5 w-3.5 ml-1" />
                     </Button>
                   </div>
                 </CardContent>
@@ -237,8 +252,13 @@ const GovSchemes: React.FC = () => {
                       <CloudRain className="h-3 w-3 mr-1" />
                       {item.trigger}
                     </Badge>
-                    <Button size="sm" variant="ghost" className="text-destructive text-xs">
-                      {t("schemes.claim")} <FileText className="h-3.5 w-3.5 ml-1" />
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="text-destructive text-xs"
+                      onClick={() => window.open(item.link, "_blank", "noopener,noreferrer")}
+                    >
+                      {t("schemes.claim")} <ExternalLink className="h-3.5 w-3.5 ml-1" />
                     </Button>
                   </div>
                 </CardContent>
