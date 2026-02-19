@@ -1,7 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // Default Gemini API key - users can override in Settings
-const DEFAULT_API_KEY = "AIzaSyC3iGiDWlFt6ztzFhjsurXvBuD_tnW60Rk";
+const DEFAULT_API_KEY = "YOUR_OWN_API_KEY_HERE"; // Get your API key from https://ai.google.dev
 
 // Get API key from localStorage or use default
 const getApiKey = (): string => {
