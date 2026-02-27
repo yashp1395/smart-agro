@@ -15,6 +15,10 @@ import { Language } from "@/i18n/translations";
 import { useWeather, getWeatherIcon, formatWeatherDate } from "@/hooks/useWeather";
 import { useMandiPrices, formatPrice } from "@/hooks/useMandiPrices";
 import { useFarmLocation } from "@/contexts/FarmLocationContext";
+import FarmingTipsCarousel from "@/components/FarmingTipsCarousel";
+import SeasonalHelper from "@/components/SeasonalHelper";
+import WelcomeGreeting from "@/components/WelcomeGreeting";
+import LocationBanner from "@/components/LocationBanner";
 import farmerField from "@/assets/farmer-field.jpg";
 
 const Dashboard: React.FC = () => {
@@ -77,6 +81,12 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* Location Detection Banner */}
+      <LocationBanner />
+
+      {/* Welcome Greeting with time-based message */}
+      <WelcomeGreeting farmerName="Ravi" />
+
       {/* Hero welcome banner */}
       <div className="relative rounded-2xl overflow-hidden h-44 group">
         <img
@@ -384,6 +394,16 @@ const Dashboard: React.FC = () => {
             ))}
           </CardContent>
         </Card>
+
+        {/* Farming Tips Carousel */}
+        <div className="col-span-7">
+          <FarmingTipsCarousel />
+        </div>
+
+        {/* Seasonal Helper */}
+        <div className="col-span-5">
+          <SeasonalHelper />
+        </div>
       </div>
     </div>
   );

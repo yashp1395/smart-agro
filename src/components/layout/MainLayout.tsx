@@ -3,6 +3,8 @@ import { useLocation } from "react-router-dom";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
 import VoiceBot from "@/components/VoiceBot";
+import QuickActions from "@/components/QuickActions";
+import OnboardingGuide from "@/components/OnboardingGuide";
 import farmBg from "@/assets/farm-bg.jpg";
 import bgSoil from "@/assets/bg-soil.jpg";
 import bgCrop from "@/assets/bg-crop.jpg";
@@ -53,7 +55,9 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           <div className="relative z-10 animate-fade-in">
             {children}
           </div>
+          <QuickActions />
           <VoiceBot />
+          <OnboardingGuide />
         </main>
       </div>
     </div>

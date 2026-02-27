@@ -16,6 +16,7 @@ import GovSchemes from "./pages/GovSchemes";
 import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
 import Profile from "./pages/Profile";
+import Weather from "./pages/Weather";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -31,6 +32,7 @@ const App = () => (
           <MainLayout>
             <Routes>
               <Route path="/" element={<Dashboard />} />
+              <Route path="/weather" element={<Weather />} />
               <Route path="/soil" element={<SoilAnalysis />} />
               <Route path="/crop" element={<CropPlanner />} />
               <Route path="/disease" element={<DiseaseDetection />} />

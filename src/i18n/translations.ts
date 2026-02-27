@@ -7,6 +7,7 @@ export const translations: Record<string, Record<Language, string>> = {
 
   // Nav
   "nav.dashboard": { en: "Dashboard", hi: "डैशबोर्ड", mr: "डॅशबोर्ड" },
+  "nav.weather": { en: "Weather", hi: "मौसम", mr: "हवामान" },
   "nav.profile": { en: "Profile", hi: "प्रोफ़ाइल", mr: "प्रोफाइल" },
   "nav.soil": { en: "Soil Analysis", hi: "मिट्टी विश्लेषण", mr: "माती विश्लेषण" },
   "nav.crop": { en: "Crop Planner", hi: "फसल योजना", mr: "पीक नियोजक" },
@@ -216,4 +217,47 @@ export const translations: Record<string, Record<Language, string>> = {
   "common.high": { en: "High", hi: "उच्च", mr: "उच्च" },
   "common.good": { en: "Good", hi: "अच्छा", mr: "चांगले" },
   "common.kmph": { en: "km/h", hi: "किमी/घं", mr: "किमी/ता" },
+  "common.close": { en: "Close", hi: "बंद करें", mr: "बंद करा" },
+
+  // Quick Actions
+  "quick.actions": { en: "Quick Actions", hi: "त्वरित कार्य", mr: "त्वरित क्रिया" },
+  "quick.scan_disease": { en: "Scan Disease", hi: "रोग जांच", mr: "रोग तपासा" },
+  "quick.scan_disease_desc": { en: "Take a photo to detect crop diseases", hi: "फसल रोग पता लगाने के लिए फोटो लें", mr: "पीक रोग ओळखण्यासाठी फोटो काढा" },
+  "quick.check_weather": { en: "Weather", hi: "मौसम", mr: "हवामान" },
+  "quick.check_weather_desc": { en: "Check today's weather forecast", hi: "आज के मौसम का पूर्वानुमान देखें", mr: "आजचा हवामान अंदाज पहा" },
+  "quick.soil_check": { en: "Soil Status", hi: "मिट्टी स्थिति", mr: "माती स्थिती" },
+  "quick.soil_check_desc": { en: "View soil health and nutrients", hi: "मिट्टी स्वास्थ्य और पोषक तत्व देखें", mr: "माती आरोग्य आणि पोषक तत्वे पहा" },
+  "quick.market_prices": { en: "Market Prices", hi: "बाजार भाव", mr: "बाजारभाव" },
+  "quick.market_prices_desc": { en: "Live mandi prices near you", hi: "आपके पास लाइव मंडी भाव", mr: "तुमच्या जवळचे थेट बाजारभाव" },
+  "quick.crop_advice": { en: "Crop Advice", hi: "फसल सलाह", mr: "पीक सल्ला" },
+  "quick.crop_advice_desc": { en: "Get personalized crop recommendations", hi: "व्यक्तिगत फसल सिफारिशें प्राप्त करें", mr: "वैयक्तिक पीक शिफारसी मिळवा" },
+  "quick.help": { en: "Govt. Schemes", hi: "सरकारी योजनाएं", mr: "सरकारी योजना" },
+  "quick.help_desc": { en: "Explore subsidies and assistance", hi: "सब्सिडी और सहायता देखें", mr: "अनुदान आणि सहाय्य पहा" },
+
+  // Voice Bot
+  "voice.assistant": { en: "Voice Assistant", hi: "आवाज सहायक", mr: "आवाज सहाय्यक" },
+  "voice.listening": { en: "Listening...", hi: "सुन रहा है...", mr: "ऐकत आहे..." },
+  "voice.speak": { en: "Tap to speak", hi: "बोलने के लिए टैप करें", mr: "बोलण्यासाठी टॅप करा" },
+  "voice.greeting": { en: "Hello! How can I help you with your farm today?", hi: "नमस्ते! आज मैं आपके खेत के बारे में कैसे मदद कर सकता हूं?", mr: "नमस्कार! आज मी तुमच्या शेताबद्दल कशी मदत करू शकतो?" },
+
+  // Crop Yield Prediction
+  "predict.title": { en: "Crop Yield Prediction", hi: "फसल उपज पूर्वानुमान", mr: "पीक उत्पादन अंदाज" },
+  "predict.subtitle": { en: "Use NPK & pH data to predict yield", hi: "उपज का पूर्वानुमान लगाने के लिए NPK और pH डेटा का उपयोग करें", mr: "उत्पादन अंदाजासाठी NPK आणि pH डेटा वापरा" },
+  "predict.use_sensor": { en: "Use Sensor Data", hi: "सेंसर डेटा उपयोग करें", mr: "सेन्सर डेटा वापरा" },
+  "predict.rainfall": { en: "Expected Rainfall (mm)", hi: "अपेक्षित वर्षा (मि.मी.)", mr: "अपेक्षित पाऊस (मि.मी.)" },
+  "predict.temperature": { en: "Temperature (°C)", hi: "तापमान (°C)", mr: "तापमान (°C)" },
+  "predict.area": { en: "Farm Area (hectares)", hi: "खेत क्षेत्र (हेक्टेयर)", mr: "शेत क्षेत्र (हेक्टर)" },
+  "predict.state": { en: "State", hi: "राज्य", mr: "राज्य" },
+  "predict.crop_type": { en: "Crop Type/Season", hi: "फसल प्रकार/मौसम", mr: "पीक प्रकार/हंगाम" },
+  "predict.crop": { en: "Select Crop", hi: "फसल चुनें", mr: "पीक निवडा" },
+  "predict.button": { en: "Predict Yield", hi: "उपज का पूर्वानुमान करें", mr: "उत्पादन अंदाज करा" },
+  "predict.predicting": { en: "Predicting...", hi: "पूर्वानुमान लगा रहे हैं...", mr: "अंदाज लावत आहे..." },
+  "predict.result": { en: "Prediction Result", hi: "पूर्वानुमान परिणाम", mr: "अंदाज निकाल" },
+  "predict.production": { en: "Total Production", hi: "कुल उत्पादन", mr: "एकूण उत्पादन" },
+  "predict.yield_hectare": { en: "Yield per Hectare", hi: "प्रति हेक्टेयर उपज", mr: "प्रति हेक्टर उत्पादन" },
+  "predict.tons": { en: "tons", hi: "टन", mr: "टन" },
+  "predict.error": { en: "Prediction Error", hi: "पूर्वानुमान त्रुटि", mr: "अंदाज त्रुटी" },
+  "predict.error_connect": { en: "Unable to connect to prediction service. Make sure the backend is running.", hi: "पूर्वानुमान सेवा से कनेक्ट करने में असमर्थ। सुनिश्चित करें कि बैकएंड चल रहा है।", mr: "अंदाज सेवेशी कनेक्ट करता आले नाही. बॅकएंड चालू असल्याची खात्री करा." },
+  "predict.info": { en: "NPK and pH values are automatically populated from sensor data", hi: "NPK और pH मान सेंसर डेटा से स्वचालित रूप से भरे जाते हैं", mr: "NPK आणि pH मूल्ये सेन्सर डेटामधून स्वयंचलितपणे भरली जातात" },
+  "predict.try_again": { en: "Try Again", hi: "पुनः प्रयास करें", mr: "पुन्हा प्रयत्न करा" },
 };

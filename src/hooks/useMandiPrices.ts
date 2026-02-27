@@ -1,8 +1,14 @@
 import { useState, useEffect, useCallback } from "react";
 
-// Data.gov.in API configuration
+// Backend proxy URL (Agmarknet via voice-bot-backend)
+const BACKEND_API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8001";
+
+// Data.gov.in API configuration (fallback)
 const API_BASE_URL = "https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070";
 const API_KEY = "YOUR_OWN_API_KEY_HERE"; // Get your API key from https://data.gov.in
+
+// Data source options
+export type DataSource = "agmarknet" | "datagov";
 
 export interface MandiRecord {
   state: string;
@@ -90,6 +96,7 @@ interface UseMandiPricesOptions {
   district?: string;
   commodity?: string;
   limit?: number;
+  dataSource?: DataSource;
 }
 
 interface UseMandiPricesReturn {
@@ -101,6 +108,7 @@ interface UseMandiPricesReturn {
   districts: string[];
   commodities: string[];
   usingFallback: boolean;
+  dataSource: string;
 }
 
 // Maharashtra districts for filtering
@@ -120,7 +128,7 @@ export const commonCommodities = [
 ];
 
 export function useMandiPrices(options: UseMandiPricesOptions = {}): UseMandiPricesReturn {
-  const { state = "Maharashtra", district, commodity, limit = 100 } = options;
+  const { state = "Maharashtra", district, commodity, limit = 100, dataSource = "agmarknet" } = options;
   
   const [data, setData] = useState<MandiRecord[]>([]);
   const [loading, setLoading] = useState(true);
@@ -129,6 +137,7 @@ export function useMandiPrices(options: UseMandiPricesOptions = {}): UseMandiPri
   const [districts, setDistricts] = useState<string[]>([]);
   const [commodities, setCommodities] = useState<string[]>([]);
   const [usingFallback, setUsingFallback] = useState(false);
+  const [currentSource, setCurrentSource] = useState<string>("Loading...");
 
   const useFallbackData = useCallback((targetDistrict: string) => {
     const mockData = generateMockData(targetDistrict || "Nagpur");
@@ -141,7 +150,93 @@ export function useMandiPrices(options: UseMandiPricesOptions = {}): UseMandiPri
     setDistricts([targetDistrict || "Nagpur"]);
     setCommodities([...new Set(filtered.map(r => r.commodity))].sort());
     setUsingFallback(true);
+    setCurrentSource("Agmarknet (Offline Data)");
   }, [commodity]);
+
+  // Fetch from Agmarknet via backend proxy
+  const fetchFromAgmarknet = useCallback(async () => {
+    const params = new URLSearchParams({
+      state,
+      limit: limit.toString(),
+    });
+
+    if (district) params.append("district", district);
+    if (commodity) params.append("commodity", commodity);
+
+    const response = await fetch(`${BACKEND_API_URL}/api/mandi-prices?${params.toString()}`);
+    
+    if (!response.ok) {
+      throw new Error(`Backend API error: ${response.status}`);
+    }
+
+    const result = await response.json();
+    
+    if (result.success && result.records?.length > 0) {
+      setData(result.records);
+      setTotal(result.total);
+      setCurrentSource(result.source || "Agmarknet via data.gov.in");
+      setUsingFallback(result.using_fallback || false);
+
+      const uniqueDistricts = [...new Set(result.records.map((r: MandiRecord) => r.district))].sort();
+      const uniqueCommodities = [...new Set(result.records.map((r: MandiRecord) => r.commodity))].sort();
+      
+      setDistricts(uniqueDistricts as string[]);
+      setCommodities(uniqueCommodities as string[]);
+      return true;
+    }
+    return false;
+  }, [state, district, commodity, limit]);
+
+  // Fetch from data.gov.in directly
+  const fetchFromDataGov = useCallback(async () => {
+    const params = new URLSearchParams({
+      "api-key": API_KEY,
+      format: "json",
+      limit: limit.toString(),
+      "filters[state]": state,
+    });
+
+    if (district) params.append("filters[district]", district);
+    if (commodity) params.append("filters[commodity]", commodity);
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
+    
+    const response = await fetch(`${API_BASE_URL}?${params.toString()}`, {
+      signal: controller.signal,
+    });
+    
+    clearTimeout(timeoutId);
+
+    if (response.status === 429) {
+      return false; // Rate limited
+    }
+
+    if (!response.ok) {
+      throw new Error(`API error: ${response.status}`);
+    }
+
+    const result: MandiAPIResponse = await response.json();
+
+    if (result.error) {
+      return false;
+    }
+
+    if (result.status === "ok" && result.records?.length > 0) {
+      setData(result.records);
+      setTotal(result.total);
+      setCurrentSource("data.gov.in (Direct)");
+      setUsingFallback(false);
+
+      const uniqueDistricts = [...new Set(result.records.map((r) => r.district))].sort();
+      const uniqueCommodities = [...new Set(result.records.map((r) => r.commodity))].sort();
+      
+      setDistricts(uniqueDistricts);
+      setCommodities(uniqueCommodities);
+      return true;
+    }
+    return false;
+  }, [state, district, commodity, limit]);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -149,74 +244,38 @@ export function useMandiPrices(options: UseMandiPricesOptions = {}): UseMandiPri
     setUsingFallback(false);
 
     try {
-      // Build URL with filters
-      const params = new URLSearchParams({
-        "api-key": API_KEY,
-        format: "json",
-        limit: limit.toString(),
-        "filters[state]": state,
-      });
-
-      if (district) {
-        params.append("filters[district]", district);
-      }
-
-      if (commodity) {
-        params.append("filters[commodity]", commodity);
-      }
-
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000);
+      let success = false;
       
-      const response = await fetch(`${API_BASE_URL}?${params.toString()}`, {
-        signal: controller.signal,
-      });
+      // Try Agmarknet backend first (preferred)
+      if (dataSource === "agmarknet") {
+        try {
+          success = await fetchFromAgmarknet();
+        } catch (err) {
+          console.warn("Agmarknet backend unavailable, trying data.gov.in directly:", err);
+        }
+      }
       
-      clearTimeout(timeoutId);
-
-      if (response.status === 429) {
-        // Rate limited - use fallback data
-        console.warn("API rate limited, using fallback data");
-        useFallbackData(district || "Nagpur");
-        setLoading(false);
-        return;
+      // Fallback to direct data.gov.in if backend fails or if explicitly selected
+      if (!success) {
+        try {
+          success = await fetchFromDataGov();
+        } catch (err) {
+          console.warn("data.gov.in direct fetch failed:", err);
+        }
       }
 
-      if (!response.ok) {
-        throw new Error(`API error: ${response.status} ${response.statusText}`);
-      }
-
-      const result: MandiAPIResponse = await response.json();
-
-      if (result.error) {
-        // API returned error (e.g., rate limit)
-        console.warn("API error:", result.error);
-        useFallbackData(district || "Nagpur");
-        setLoading(false);
-        return;
-      }
-
-      if (result.status === "ok" && result.records && result.records.length > 0) {
-        setData(result.records);
-        setTotal(result.total);
-
-        // Extract unique districts and commodities from the data
-        const uniqueDistricts = [...new Set(result.records.map((r) => r.district))].sort();
-        const uniqueCommodities = [...new Set(result.records.map((r) => r.commodity))].sort();
-        
-        setDistricts(uniqueDistricts);
-        setCommodities(uniqueCommodities);
-      } else {
-        // No data returned - use fallback
+      // Use fallback mock data if all APIs fail
+      if (!success) {
         useFallbackData(district || "Nagpur");
       }
+      
     } catch (err) {
-      console.warn("Mandi API fetch failed, using fallback:", err);
+      console.warn("All API sources failed, using fallback:", err);
       useFallbackData(district || "Nagpur");
     } finally {
       setLoading(false);
     }
-  }, [state, district, commodity, limit, useFallbackData]);
+  }, [dataSource, fetchFromAgmarknet, fetchFromDataGov, useFallbackData, district]);
 
   useEffect(() => {
     fetchData();
@@ -231,6 +290,7 @@ export function useMandiPrices(options: UseMandiPricesOptions = {}): UseMandiPri
     districts,
     commodities,
     usingFallback,
+    dataSource: currentSource,
   };
 }
 

@@ -11,7 +11,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { TrendingUp, Info, RefreshCw, Store, MapPin, Search, ExternalLink, Loader2, AlertCircle, IndianRupee } from "lucide-react";
 import { marketPredictions, marketPriceTrend, cropList } from "@/data/mockData";
 import { Language } from "@/i18n/translations";
-import { useMandiPrices, formatPrice, formatMandiDate, maharashtraDistricts } from "@/hooks/useMandiPrices";
+import { useMandiPrices, formatPrice, formatMandiDate, maharashtraDistricts, DataSource } from "@/hooks/useMandiPrices";
 
 const MarketAdvisor: React.FC = () => {
   const { language, t } = useLanguage();
@@ -25,12 +25,13 @@ const MarketAdvisor: React.FC = () => {
   const [selectedCommodity, setSelectedCommodity] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Fetch mandi data
-  const { data: mandiData, loading, error, total, refetch, commodities } = useMandiPrices({
+  // Fetch mandi data from Agmarknet
+  const { data: mandiData, loading, error, total, refetch, commodities, usingFallback, dataSource } = useMandiPrices({
     state: "Maharashtra",
     district: selectedDistrict !== "all" ? selectedDistrict : undefined,
     commodity: selectedCommodity !== "all" ? selectedCommodity : undefined,
     limit: 200,
+    dataSource: "agmarknet",
   });
 
   // Filter data based on search
@@ -72,14 +73,25 @@ const MarketAdvisor: React.FC = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-poppins font-bold">{t("market.title")}</h1>
-        <a
-          href="https://www.data.gov.in/resource/current-daily-price-various-commodities-various-markets-mandi"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-xs text-muted-foreground flex items-center gap-1 hover:text-primary transition-colors"
-        >
-          {t("market.data_source")} <ExternalLink className="h-3 w-3" />
-        </a>
+        <div className="flex items-center gap-3">
+          {usingFallback && (
+            <Badge variant="outline" className="text-xs bg-yellow-500/10 text-yellow-600 border-yellow-500/30">
+              <AlertCircle className="h-3 w-3 mr-1" />
+              Offline Data
+            </Badge>
+          )}
+          <span className="text-xs text-muted-foreground hidden sm:block">
+            {dataSource}
+          </span>
+          <a
+            href="https://agmarknet.gov.in"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs text-muted-foreground flex items-center gap-1 hover:text-primary transition-colors"
+          >
+            Agmarknet <ExternalLink className="h-3 w-3" />
+          </a>
+        </div>
       </div>
 
       <Tabs defaultValue="realtime" className="w-full">

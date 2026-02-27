@@ -1,6 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
 
-// Open-Meteo API - Free, no API key required
+// Backend API URL for Indian Weather API proxy
+const BACKEND_API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8001";
+
+// Open-Meteo API - Free, no API key required (fallback)
 const WEATHER_API_BASE = "https://api.open-meteo.com/v1/forecast";
 const GEOCODING_API_BASE = "https://geocoding-api.open-meteo.com/v1/search";
 
@@ -8,10 +11,12 @@ const GEOCODING_API_BASE = "https://geocoding-api.open-meteo.com/v1/search";
 const DEFAULT_LOCATION = {
   latitude: 21.1458,
   longitude: 79.0882,
-  name: "Nagpur",
-  district: "Nagpur",
+  name: "Pune",
+  district: "Pune",
   state: "Maharashtra",
 };
+
+export type WeatherDataSource = "indianapi" | "open-meteo" | "mock";
 
 export interface WeatherData {
   current: {
@@ -50,11 +55,13 @@ export interface WeatherData {
     longitude: number;
   };
   lastUpdated: Date;
+  dataSource: WeatherDataSource;
 }
 
 interface UseWeatherReturn {
   weather: WeatherData | null;
   loading: boolean;
+  dataSource: WeatherDataSource | null;
   error: string | null;
   locationPermission: "granted" | "denied" | "prompt" | "unknown";
   refetch: () => void;
@@ -145,17 +152,108 @@ export function useWeather(options?: UseWeatherOptions): UseWeatherReturn {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [locationPermission, setLocationPermission] = useState<"granted" | "denied" | "prompt" | "unknown">("unknown");
+  const [dataSource, setDataSource] = useState<WeatherDataSource | null>(null);
   const [coords, setCoords] = useState<{ lat: number; lon: number } | null>(
     latitude !== undefined && longitude !== undefined 
       ? { lat: latitude, lon: longitude } 
       : null
   );
 
+  // Try Indian Weather API via backend first
+  const fetchFromIndianAPI = async (cityName: string): Promise<WeatherData | null> => {
+    try {
+      const response = await fetch(
+        `${BACKEND_API_URL}/api/weather/current?city=${encodeURIComponent(cityName)}`
+      );
+      
+      if (!response.ok) return null;
+      
+      const data = await response.json();
+      if (!data.success || data.using_fallback) return null;
+      
+      const current = data.current;
+      
+      // Get forecast
+      const forecastResponse = await fetch(
+        `${BACKEND_API_URL}/api/weather/forecast?city=${encodeURIComponent(cityName)}&days=7`
+      );
+      
+      let daily: WeatherData["daily"] = [];
+      if (forecastResponse.ok) {
+        const forecastData = await forecastResponse.json();
+        if (forecastData.forecast) {
+          daily = forecastData.forecast.map((day: { date: string; max_temp: number; min_temp: number; description: string; precipitation_probability?: number }) => ({
+            date: day.date,
+            maxTemp: Math.round(day.max_temp),
+            minTemp: Math.round(day.min_temp),
+            weatherCode: 2, // Default to partly cloudy
+            weatherDescription: day.description,
+            precipitationProbability: day.precipitation_probability || 0,
+            precipitationSum: 0,
+            sunrise: "",
+            sunset: "",
+            uvIndexMax: 7,
+            windSpeedMax: 15,
+          }));
+        }
+      }
+      
+      return {
+        current: {
+          temperature: Math.round(current.temperature),
+          humidity: current.humidity,
+          windSpeed: Math.round(current.wind_speed),
+          windDirection: 0,
+          weatherCode: 2, // Default code for partly cloudy
+          weatherDescription: current.description,
+          feelsLike: Math.round(current.feels_like || current.temperature),
+          precipitation: 0,
+          cloudCover: 50,
+          pressure: Math.round(current.pressure || 1013),
+          uvIndex: current.uv_index || 7,
+          visibility: current.visibility || 10,
+          isDay: true,
+        },
+        daily,
+        location: {
+          name: cityName,
+          district: cityName,
+          state: data.state || "Maharashtra",
+          latitude: 0,
+          longitude: 0,
+        },
+        lastUpdated: new Date(),
+        dataSource: "indianapi" as WeatherDataSource,
+      };
+    } catch {
+      return null;
+    }
+  };
+
   const fetchWeather = useCallback(async (latitude: number, longitude: number) => {
     setLoading(true);
     setError(null);
 
     try {
+      // First, get location name for Indian API
+      const locationInfo = await reverseGeocode(latitude, longitude);
+      const cityName = locationInfo.name;
+      
+      // Try Indian Weather API first
+      const indianWeather = await fetchFromIndianAPI(cityName);
+      if (indianWeather) {
+        indianWeather.location = {
+          ...indianWeather.location,
+          latitude,
+          longitude,
+        };
+        setWeather(indianWeather);
+        setDataSource("indianapi");
+        setLoading(false);
+        return;
+      }
+      
+      // Fallback to Open-Meteo
       // Fetch weather data from Open-Meteo
       const params = new URLSearchParams({
         latitude: latitude.toString(),
@@ -195,9 +293,6 @@ export function useWeather(options?: UseWeatherOptions): UseWeatherReturn {
       }
 
       const data = await response.json();
-
-      // Get location name
-      const locationInfo = await reverseGeocode(latitude, longitude);
 
       // Parse current weather
       const current = {
@@ -240,7 +335,9 @@ export function useWeather(options?: UseWeatherOptions): UseWeatherReturn {
           longitude,
         },
         lastUpdated: new Date(),
+        dataSource: "open-meteo" as WeatherDataSource,
       });
+      setDataSource("open-meteo");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to fetch weather data");
     } finally {
@@ -334,6 +431,7 @@ export function useWeather(options?: UseWeatherOptions): UseWeatherReturn {
     loading,
     error,
     locationPermission,
+    dataSource,
     refetch,
     setManualLocation,
   };
