@@ -13,6 +13,8 @@ export const soilData = {
   ph: 6.2,
   moisture: 38,
   organic: 2.8,
+  ec: 1.2, // Electrical Conductivity (dS/m)
+  soilTemperature: 27, // Soil temperature (°C)
 };
 
 export const cropRecommendation = {
@@ -53,19 +55,81 @@ export const intercroppingPairs = [
     months: [6, 7, 8, 9, 10, 11],
   },
   {
+    main: { name: "Soybean", nameHi: "सोयाबीन", nameMr: "सोयाबीन", emoji: "🫘" },
+    companion: { name: "Maize", nameHi: "मक्का", nameMr: "मका", emoji: "🌽" },
+    benefit: { en: "Better space utilization, wind protection", hi: "बेहतर जगह उपयोग, हवा से सुरक्षा", mr: "चांगला जागेचा वापर, वाऱ्यापासून संरक्षण" },
+    months: [6, 7, 8, 9, 10],
+  },
+  {
     main: { name: "Cotton", nameHi: "कपास", nameMr: "कापूस", emoji: "🌿" },
     companion: { name: "Black Gram", nameHi: "उड़द", nameMr: "उडीद", emoji: "🫘" },
     benefit: { en: "Soil fertility, weed control", hi: "मिट्टी उर्वरता, खरपतवार नियंत्रण", mr: "माती सुपीकता, तण नियंत्रण" },
     months: [6, 7, 8, 9, 10],
   },
+  {
+    main: { name: "Cotton", nameHi: "कपास", nameMr: "कापूस", emoji: "🌿" },
+    companion: { name: "Green Gram", nameHi: "मूंग", nameMr: "मूग", emoji: "🫛" },
+    benefit: { en: "Nitrogen fixation, additional income", hi: "नाइट्रोजन स्थिरीकरण, अतिरिक्त आय", mr: "नायट्रोजन स्थिरीकरण, अतिरिक्त उत्पन्न" },
+    months: [6, 7, 8, 9],
+  },
+  {
+    main: { name: "Wheat", nameHi: "गेहूं", nameMr: "गहू", emoji: "🌾" },
+    companion: { name: "Mustard", nameHi: "सरसों", nameMr: "मोहरी", emoji: "🌼" },
+    benefit: { en: "Pest deterrent, oil seed bonus", hi: "कीट निवारक, तिलहन बोनस", mr: "कीड निवारक, तेलबिया बोनस" },
+    months: [10, 11, 12, 1, 2, 3],
+  },
+  {
+    main: { name: "Wheat", nameHi: "गेहूं", nameMr: "गहू", emoji: "🌾" },
+    companion: { name: "Chickpea", nameHi: "चना", nameMr: "हरभरा", emoji: "🫛" },
+    benefit: { en: "Nitrogen fixation, diversified income", hi: "नाइट्रोजन स्थिरीकरण, विविध आय", mr: "नायट्रोजन स्थिरीकरण, विविध उत्पन्न" },
+    months: [10, 11, 12, 1, 2, 3],
+  },
+  {
+    main: { name: "Chickpea", nameHi: "चना", nameMr: "हरभरा", emoji: "🫛" },
+    companion: { name: "Linseed", nameHi: "अलसी", nameMr: "अळशी", emoji: "🌿" },
+    benefit: { en: "Mixed cropping, risk reduction", hi: "मिश्रित खेती, जोखिम कमी", mr: "मिश्र पीक, धोका कमी" },
+    months: [10, 11, 12, 1, 2],
+  },
+  {
+    main: { name: "Pigeon Pea", nameHi: "अरहर", nameMr: "तूर", emoji: "🌱" },
+    companion: { name: "Sorghum", nameHi: "ज्वार", nameMr: "ज्वारी", emoji: "🌾" },
+    benefit: { en: "Better land use, fodder availability", hi: "बेहतर भूमि उपयोग, चारा उपलब्धता", mr: "चांगला जमिनीचा वापर, चारा उपलब्धता" },
+    months: [6, 7, 8, 9, 10, 11, 12],
+  },
 ];
 
-export const fertilizerPlan = [
-  { stage: { en: "Sowing", hi: "बुवाई", mr: "पेरणी" }, fertilizer: "DAP", dosage: "50 kg/acre", timing: "At sowing", icon: "🌱" },
-  { stage: { en: "Vegetative", hi: "वानस्पतिक", mr: "वनस्पती वाढ" }, fertilizer: "Urea", dosage: "25 kg/acre", timing: "30 days", icon: "🌿" },
-  { stage: { en: "Flowering", hi: "फूल आना", mr: "फुलोरा" }, fertilizer: "MOP", dosage: "20 kg/acre", timing: "45 days", icon: "🌸" },
-  { stage: { en: "Pod Formation", hi: "फली बनना", mr: "शेंग तयार होणे" }, fertilizer: "Micronutrients", dosage: "Spray", timing: "60 days", icon: "🫛" },
-];
+export const fertilizerPlanByCrop: Record<string, typeof fertilizerPlan> = {
+  "Soybean": [
+    { stage: { en: "Sowing", hi: "बुवाई", mr: "पेरणी" }, fertilizer: "DAP", dosage: "50 kg/acre", timing: "At sowing", icon: "🌱" },
+    { stage: { en: "Vegetative", hi: "वानस्पतिक", mr: "वनस्पती वाढ" }, fertilizer: "Urea", dosage: "25 kg/acre", timing: "30 days", icon: "🌿" },
+    { stage: { en: "Flowering", hi: "फूल आना", mr: "फुलोरा" }, fertilizer: "MOP", dosage: "20 kg/acre", timing: "45 days", icon: "🌸" },
+    { stage: { en: "Pod Formation", hi: "फली बनना", mr: "शेंग तयार होणे" }, fertilizer: "Micronutrients", dosage: "Spray", timing: "60 days", icon: "🫛" },
+  ],
+  "Cotton": [
+    { stage: { en: "Sowing", hi: "बुवाई", mr: "पेरणी" }, fertilizer: "DAP", dosage: "60 kg/acre", timing: "At sowing", icon: "🌱" },
+    { stage: { en: "Early Growth", hi: "प्रारंभिक वृद्धि", mr: "प्रारंभिक वाढ" }, fertilizer: "Urea", dosage: "30 kg/acre", timing: "25 days", icon: "🌿" },
+    { stage: { en: "Square Formation", hi: "स्क्वायर बनना", mr: "स्क्वेअर तयार होणे" }, fertilizer: "MOP", dosage: "25 kg/acre", timing: "50 days", icon: "🌼" },
+    { stage: { en: "Boll Formation", hi: "बॉल बनना", mr: "बोंड तयार होणे" }, fertilizer: "Boron Spray", dosage: "2g/L", timing: "70 days", icon: "🌿" },
+  ],
+  "Wheat": [
+    { stage: { en: "Sowing", hi: "बुवाई", mr: "पेरणी" }, fertilizer: "DAP", dosage: "55 kg/acre", timing: "At sowing", icon: "🌾" },
+    { stage: { en: "Tillering", hi: "कल्ले निकलना", mr: "फुटवे येणे" }, fertilizer: "Urea", dosage: "45 kg/acre", timing: "21 days", icon: "🌿" },
+    { stage: { en: "Heading", hi: "बालियाँ आना", mr: "कणसे येणे" }, fertilizer: "Urea", dosage: "25 kg/acre", timing: "45 days", icon: "🌾" },
+    { stage: { en: "Grain Filling", hi: "दाना भरना", mr: "दाणा भरणे" }, fertilizer: "Zinc Spray", dosage: "0.5%", timing: "60 days", icon: "✨" },
+  ],
+  "Chickpea": [
+    { stage: { en: "Sowing", hi: "बुवाई", mr: "पेरणी" }, fertilizer: "SSP", dosage: "100 kg/acre", timing: "At sowing", icon: "🫛" },
+    { stage: { en: "Branching", hi: "शाखाएं निकलना", mr: "फांद्या येणे" }, fertilizer: "Rhizobium", dosage: "Seed treatment", timing: "Before sowing", icon: "🌱" },
+    { stage: { en: "Flowering", hi: "फूल आना", mr: "फुलोरा" }, fertilizer: "Urea Spray", dosage: "2%", timing: "45 days", icon: "🌸" },
+    { stage: { en: "Pod Development", hi: "फली विकास", mr: "शेंग विकास" }, fertilizer: "Micronutrients", dosage: "Spray", timing: "60 days", icon: "🫛" },
+  ],
+  "Pigeon Pea": [
+    { stage: { en: "Sowing", hi: "बुवाई", mr: "पेरणी" }, fertilizer: "DAP", dosage: "40 kg/acre", timing: "At sowing", icon: "🌱" },
+    { stage: { en: "Vegetative", hi: "वानस्पतिक", mr: "वनस्पती वाढ" }, fertilizer: "Urea", dosage: "15 kg/acre", timing: "30 days", icon: "🌿" },
+    { stage: { en: "Flowering", hi: "फूल आना", mr: "फुलोरा" }, fertilizer: "MOP", dosage: "20 kg/acre", timing: "90 days", icon: "🌸" },
+    { stage: { en: "Pod Formation", hi: "फली बनना", mr: "शेंग तयार होणे" }, fertilizer: "Boron", dosage: "Spray", timing: "120 days", icon: "🫛" },
+  ],
+};
 
 export const diseaseResult = {
   name: { en: "Leaf Blight (Cercospora)", hi: "पत्ती झुलसा (सर्कोस्पोरा)", mr: "पानावरील करपा (सर्कोस्पोरा)" },

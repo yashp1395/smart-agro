@@ -59,6 +59,9 @@ export const translations: Record<string, Record<Language, string>> = {
   "soil.p_good": { en: "Phosphorus levels are adequate", hi: "फॉस्फोरस का स्तर पर्याप्त है", mr: "फॉस्फरसची पातळी पुरेशी आहे" },
   "soil.k_medium": { en: "Potassium is moderate — add potash fertilizer", hi: "पोटैशियम मध्यम है — पोटाश खाद डालें", mr: "पोटॅशियम मध्यम आहे — पोटॅश खत घाला" },
   "soil.ph_note": { en: "pH is slightly acidic — lime application suggested", hi: "pH थोड़ा अम्लीय है — चूना डालने का सुझाव", mr: "pH किंचित आम्लधर्मी — चुना वापरा" },
+  "soil.ec_note": { en: "EC is normal — good for most crops", hi: "EC सामान्य है — अधिकतर फसलों के लिए अच्छा", mr: "EC सामान्य आहे — बहुतेक पिकांसाठी योग्य" },
+  "soil.moisture_note": { en: "Soil moisture is adequate — no irrigation needed now", hi: "मिट्टी की नमी पर्याप्त है — अभी सिंचाई की जरूरत नहीं", mr: "मातीतील ओलावा पुरेसा आहे — आता सिंचनाची गरज नाही" },
+  "soil.temp_note": { en: "Soil temperature is optimal for seed germination", hi: "बीज अंकुरण के लिए मिट्टी का तापमान उचित है", mr: "बियाणे उगवणासाठी मातीचे तापमान योग्य आहे" },
 
   // Crop Planner
   "crop.title": { en: "Crop Planner", hi: "फसल योजना", mr: "पीक नियोजक" },
@@ -77,6 +80,12 @@ export const translations: Record<string, Record<Language, string>> = {
   "crop.stage": { en: "Stage", hi: "चरण", mr: "टप्पा" },
   "crop.fertilizer_type": { en: "Fertilizer", hi: "उर्वरक", mr: "खत" },
   "crop.dosage": { en: "Dosage", hi: "खुराक", mr: "मात्रा" },
+  "crop.selected": { en: "Selected", hi: "चयनित", mr: "निवडलेले" },
+  "crop.active": { en: "Active", hi: "सक्रिय", mr: "सक्रिय" },
+  "crop.showing_for": { en: "Showing intercropping options for", hi: "अंतरफसल विकल्प दिखाए जा रहे हैं", mr: "अंतरपीक पर्याय दाखवत आहे" },
+  "crop.no_intercropping": { en: "No intercropping options available", hi: "कोई अंतर-फसल विकल्प उपलब्ध नहीं", mr: "अंतरपीक पर्याय उपलब्ध नाहीत" },
+  "crop.select_another": { en: "Select a crop from the recommended tab", hi: "अनुशंसित टैब से फसल चुनें", mr: "शिफारस केलेल्या टॅबमधून पीक निवडा" },
+  "crop.fertilizer_for": { en: "Fertilizer plan for", hi: "उर्वरक योजना", mr: "खत योजना" },
 
   // Disease
   "disease.title": { en: "Disease Detection", hi: "रोग पहचान", mr: "रोग ओळख" },

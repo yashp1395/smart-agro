@@ -1,18 +1,38 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ArrowRight, ArrowLeftRight, Check } from "lucide-react";
-import { recommendedCrops, intercroppingPairs, fertilizerPlan } from "@/data/mockData";
+import { ArrowRight, ArrowLeftRight, Check, AlertCircle } from "lucide-react";
+import { recommendedCrops, intercroppingPairs, fertilizerPlanByCrop } from "@/data/mockData";
 import { Language } from "@/i18n/translations";
 import { toast } from "@/hooks/use-toast";
 
 const CropPlanner: React.FC = () => {
   const { language, t } = useLanguage();
   const lang = language as Language;
+  const [selectedCrop, setSelectedCrop] = useState<string | null>(null);
+  
+  // Filter intercropping pairs based on selected crop
+  const filteredIntercroppingPairs = useMemo(() => {
+    if (!selectedCrop) return intercroppingPairs;
+    return intercroppingPairs.filter(pair => pair.main.name === selectedCrop);
+  }, [selectedCrop]);
+  
+  // Get fertilizer plan for selected crop
+  const currentFertilizerPlan = useMemo(() => {
+    if (!selectedCrop || !fertilizerPlanByCrop[selectedCrop]) {
+      return fertilizerPlanByCrop["Soybean"]; // Default to Soybean
+    }
+    return fertilizerPlanByCrop[selectedCrop];
+  }, [selectedCrop]);
+
+  const handleSelectCrop = (cropName: string, cropDisplayName: string) => {
+    setSelectedCrop(cropName);
+    toast({ title: `${cropDisplayName} ${t("crop.selected") || "selected"}!` });
+  };
 
   const getName = (item: { name: string; nameHi: string; nameMr: string }) =>
     lang === "hi" ? item.nameHi : lang === "mr" ? item.nameMr : item.name;
@@ -48,10 +68,11 @@ const CropPlanner: React.FC = () => {
                 </TableHeader>
                 <TableBody>
                   {recommendedCrops.map((crop) => (
-                    <TableRow key={crop.name} className="hover:bg-muted/30">
+                    <TableRow key={crop.name} className={`hover:bg-muted/30 ${selectedCrop === crop.name ? "bg-primary/10 border-l-4 border-primary" : ""}`}>
                       <TableCell className="font-medium">
                         <span className="text-xl mr-2">{crop.emoji}</span>
                         {getName(crop)}
+                        {selectedCrop === crop.name && <span className="ml-2 text-xs bg-primary text-primary-foreground px-2 py-0.5 rounded-full">{t("crop.active") || "Active"}</span>}
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2 min-w-[150px]">
@@ -64,8 +85,12 @@ const CropPlanner: React.FC = () => {
                       </TableCell>
                       <TableCell className="font-inter text-sm">{crop.yield}</TableCell>
                       <TableCell>
-                        <Button size="sm" onClick={() => toast({ title: `${getName(crop)} selected!` })} className="h-9 bg-primary hover:bg-primary/90">
-                          <Check className="h-4 w-4 mr-1" />{t("crop.select")}
+                        <Button 
+                          size="sm" 
+                          onClick={() => handleSelectCrop(crop.name, getName(crop))} 
+                          className={`h-9 ${selectedCrop === crop.name ? "bg-success hover:bg-success/90" : "bg-primary hover:bg-primary/90"}`}
+                        >
+                          <Check className="h-4 w-4 mr-1" />{selectedCrop === crop.name ? (t("crop.selected") || "Selected") : t("crop.select")}
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -77,8 +102,23 @@ const CropPlanner: React.FC = () => {
         </TabsContent>
 
         <TabsContent value="intercropping">
-          <div className="grid grid-cols-2 gap-6">
-            {intercroppingPairs.map((pair, i) => (
+          {selectedCrop && (
+            <div className="mb-4 p-3 bg-primary/10 rounded-lg flex items-center gap-2">
+              <span className="text-lg">{recommendedCrops.find(c => c.name === selectedCrop)?.emoji}</span>
+              <span className="font-medium">{t("crop.showing_for") || "Showing intercropping options for"}: {getName(recommendedCrops.find(c => c.name === selectedCrop)!)}</span>
+            </div>
+          )}
+          {filteredIntercroppingPairs.length === 0 ? (
+            <Card className="bg-card/95">
+              <CardContent className="pt-6 text-center py-12">
+                <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <p className="text-lg font-medium">{t("crop.no_intercropping") || "No intercropping options available for this crop"}</p>
+                <p className="text-muted-foreground mt-2">{t("crop.select_another") || "Please select another crop from the recommended tab"}</p>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid grid-cols-2 gap-6">
+              {filteredIntercroppingPairs.map((pair, i) => (
               <Card key={i} className="bg-card/95 hover:shadow-lg transition-shadow">
                 <CardContent className="pt-6">
                   <div className="flex items-center justify-center gap-4 mb-4">
@@ -113,14 +153,21 @@ const CropPlanner: React.FC = () => {
                 </CardContent>
               </Card>
             ))}
-          </div>
+            </div>
+          )}
         </TabsContent>
 
         <TabsContent value="fertilizer">
+          {selectedCrop && (
+            <div className="mb-4 p-3 bg-primary/10 rounded-lg flex items-center gap-2">
+              <span className="text-lg">{recommendedCrops.find(c => c.name === selectedCrop)?.emoji}</span>
+              <span className="font-medium">{t("crop.fertilizer_for") || "Fertilizer plan for"}: {getName(recommendedCrops.find(c => c.name === selectedCrop)!)}</span>
+            </div>
+          )}
           <Card className="bg-card/95">
             <CardContent className="pt-6">
               <div className="space-y-4">
-                {fertilizerPlan.map((stage, i) => (
+                {currentFertilizerPlan.map((stage, i) => (
                   <div key={i} className="flex items-center gap-4 p-4 bg-muted/20 rounded-xl border-l-4 border-primary">
                     <span className="text-3xl">{stage.icon}</span>
                     <div className="flex-1">
@@ -135,7 +182,7 @@ const CropPlanner: React.FC = () => {
                       <p className="font-inter font-bold">{stage.dosage}</p>
                       <p className="text-sm text-muted-foreground">{t("crop.dosage")}</p>
                     </div>
-                    {i < fertilizerPlan.length - 1 && (
+                    {i < currentFertilizerPlan.length - 1 && (
                       <ArrowRight className="h-5 w-5 text-muted-foreground" />
                     )}
                   </div>

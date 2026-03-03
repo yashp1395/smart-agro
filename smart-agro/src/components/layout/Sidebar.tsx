@@ -34,14 +34,15 @@ const Sidebar: React.FC = () => {
   return (
     <aside
       className={cn(
-        "bg-gradient-to-b from-[#1a472a] to-[#0d2818] flex flex-col shrink-0 transition-all duration-300 relative shadow-2xl border-r border-white/10",
+        "bg-black flex flex-col shrink-0 transition-all duration-300 relative shadow-2xl border-r border-white/10 overflow-y-auto scrollbar-thin scrollbar-thumb-green-700 scrollbar-track-black",
         collapsed ? "w-[72px]" : "w-[280px]"
       )}
+      style={{ maxHeight: '100vh' }}
     >
       {/* Logo section when collapsed */}
       {collapsed && (
         <div className="py-4 flex justify-center">
-          <div className="h-12 w-12 rounded-xl bg-white/20 flex items-center justify-center shadow-lg">
+          <div className="h-12 w-12 rounded-xl bg-green-600/80 flex items-center justify-center shadow-lg">
             <Sprout className="h-6 w-6 text-white" />
           </div>
         </div>
@@ -59,12 +60,12 @@ const Sidebar: React.FC = () => {
                     "flex items-center gap-3 px-4 py-4 rounded-xl text-[16px] font-semibold transition-all duration-200",
                     "hover:bg-white/15 hover:translate-x-1 group touch-target",
                     isActive
-                      ? "bg-white/25 text-white shadow-lg border-l-4 border-yellow-400"
+                      ? "bg-green-600/30 text-white shadow-lg border-l-4 border-green-500"
                       : "text-white/90 hover:text-white bg-white/5"
                   )
                 }
               >
-                <div className="relative flex items-center justify-center h-8 w-8 rounded-lg bg-white/10 group-hover:bg-white/20 transition-colors">
+                <div className="relative flex items-center justify-center h-8 w-8 rounded-lg bg-green-600/20 group-hover:bg-green-600/30 transition-colors">
                   <item.icon className="h-5 w-5 shrink-0 transition-transform group-hover:scale-110" />
                   {/* Show emoji badge when collapsed */}
                   {collapsed && (
@@ -92,18 +93,18 @@ const Sidebar: React.FC = () => {
         ))}
       </nav>
 
-      {/* Bottom help section */}
+      {/* Bottom help section
       {!collapsed && (
-        <div className="p-4 mx-3 mb-4 bg-white/15 rounded-xl border border-white/20 shadow-inner">
+        <div className="p-4 mx-3 mb-4 bg-green-600/20 rounded-xl border border-green-500/30 shadow-inner">
           <p className="text-white text-sm leading-relaxed font-medium">
             💡 Tip: Use voice assistant for quick help in Hindi, Marathi!
           </p>
         </div>
-      )}
+      )} */}
 
       <button
         onClick={() => setCollapsed(!collapsed)}
-        className="absolute -right-4 top-8 bg-yellow-500 border-2 border-white text-white rounded-full p-2 shadow-xl hover:bg-yellow-400 hover:scale-110 transition-all"
+        className="absolute -right-4 top-8 bg-green-600 border-2 border-white text-white rounded-full p-2 shadow-xl hover:bg-green-500 hover:scale-110 transition-all"
         aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
       >
         {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}

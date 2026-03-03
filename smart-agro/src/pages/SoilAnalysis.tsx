@@ -3,7 +3,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
-import { Download, FlaskConical, Droplets, Leaf, AlertCircle, CheckCircle } from "lucide-react";
+import { Download, FlaskConical, Droplets, Leaf, AlertCircle, CheckCircle, Thermometer, Zap } from "lucide-react";
 import { soilData } from "@/data/mockData";
 import { Language } from "@/i18n/translations";
 import { toast } from "@/hooks/use-toast";
@@ -13,6 +13,9 @@ const SoilAnalysis: React.FC = () => {
   const lang = language as Language;
   const [calibrated, setCalibrated] = useState(true);
   const [npk, setNpk] = useState({ n: soilData.nitrogen, p: soilData.phosphorus, k: soilData.potassium });
+  const [ec, setEc] = useState(soilData.ec || 1.2); // default EC value
+  const [moisture, setMoisture] = useState(soilData.moisture || 38);
+  const [soilTemp, setSoilTemp] = useState(soilData.soilTemperature || 27);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -21,6 +24,9 @@ const SoilAnalysis: React.FC = () => {
         p: Math.max(20, Math.min(90, npk.p + (Math.random() - 0.5) * 3)),
         k: Math.max(20, Math.min(90, npk.k + (Math.random() - 0.5) * 3)),
       });
+      setEc((prev) => Math.max(0.5, Math.min(3, prev + (Math.random() - 0.5) * 0.05)));
+      setMoisture((prev) => Math.max(10, Math.min(90, prev + (Math.random() - 0.5) * 2)));
+      setSoilTemp((prev) => Math.max(10, Math.min(40, prev + (Math.random() - 0.5) * 0.2)));
     }, 3000);
     return () => clearInterval(interval);
   }, [npk]);
@@ -46,10 +52,13 @@ const SoilAnalysis: React.FC = () => {
   };
 
   const conditions = [
-    { key: "soil.n_low", icon: <AlertCircle className="h-5 w-5 text-warning" />, status: "warning" as const },
-    { key: "soil.p_good", icon: <CheckCircle className="h-5 w-5 text-success" />, status: "good" as const },
-    { key: "soil.k_medium", icon: <AlertCircle className="h-5 w-5 text-accent" />, status: "medium" as const },
-    { key: "soil.ph_note", icon: <Droplets className="h-5 w-5 text-info" />, status: "info" as const },
+    { key: "soil.n_low", icon: <AlertCircle className="h-4 w-4 text-warning" />, status: "warning" as const },
+    { key: "soil.p_good", icon: <CheckCircle className="h-4 w-4 text-success" />, status: "good" as const },
+    { key: "soil.k_medium", icon: <AlertCircle className="h-4 w-4 text-accent" />, status: "medium" as const },
+    { key: "soil.ph_note", icon: <Droplets className="h-4 w-4 text-info" />, status: "info" as const },
+    { key: "soil.ec_note", icon: <Zap className="h-4 w-4 text-purple-500" />, status: "info" as const },
+    { key: "soil.moisture_note", icon: <Droplets className="h-4 w-4 text-sky-500" />, status: "good" as const },
+    { key: "soil.temp_note", icon: <Thermometer className="h-4 w-4 text-orange-500" />, status: "good" as const },
   ];
 
   return (
@@ -81,10 +90,46 @@ const SoilAnalysis: React.FC = () => {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="flex justify-around">
+            <div className="flex flex-wrap justify-around gap-4">
               <CircularGauge value={npk.n} label={t("dash.nitrogen")} color="hsl(var(--warning))" />
               <CircularGauge value={npk.p} label={t("dash.phosphorus")} color="hsl(var(--success))" />
               <CircularGauge value={npk.k} label={t("dash.potassium")} color="hsl(var(--accent))" />
+              <div className="flex flex-col items-center">
+                <svg width="120" height="120" className="drop-shadow-sm">
+                  <circle cx="60" cy="60" r="45" fill="none" stroke="hsl(var(--muted))" strokeWidth="10" />
+                  <circle cx="60" cy="60" r="45" fill="none" stroke="#7e22ce" strokeWidth="10"
+                    strokeDasharray={2 * Math.PI * 45} strokeDashoffset={2 * Math.PI * 45 - (ec / 3) * 2 * Math.PI * 45}
+                    strokeLinecap="round" transform="rotate(-90 60 60)" className="transition-all duration-1000" />
+                  <text x="60" y="60" textAnchor="middle" dominantBaseline="middle" className="text-lg font-bold font-inter fill-foreground">
+                    {ec.toFixed(2)}
+                  </text>
+                </svg>
+                <p className="text-sm font-medium mt-1">EC (dS/m)</p>
+              </div>
+              <div className="flex flex-col items-center">
+                <svg width="120" height="120" className="drop-shadow-sm">
+                  <circle cx="60" cy="60" r="45" fill="none" stroke="hsl(var(--muted))" strokeWidth="10" />
+                  <circle cx="60" cy="60" r="45" fill="none" stroke="#0ea5e9" strokeWidth="10"
+                    strokeDasharray={2 * Math.PI * 45} strokeDashoffset={2 * Math.PI * 45 - (moisture / 100) * 2 * Math.PI * 45}
+                    strokeLinecap="round" transform="rotate(-90 60 60)" className="transition-all duration-1000" />
+                  <text x="60" y="60" textAnchor="middle" dominantBaseline="middle" className="text-lg font-bold font-inter fill-foreground">
+                    {Math.round(moisture)}%
+                  </text>
+                </svg>
+                <p className="text-sm font-medium mt-1">{t("dash.humidity")} (Soil)</p>
+              </div>
+              <div className="flex flex-col items-center">
+                <svg width="120" height="120" className="drop-shadow-sm">
+                  <circle cx="60" cy="60" r="45" fill="none" stroke="hsl(var(--muted))" strokeWidth="10" />
+                  <circle cx="60" cy="60" r="45" fill="none" stroke="#f59e42" strokeWidth="10"
+                    strokeDasharray={2 * Math.PI * 45} strokeDashoffset={2 * Math.PI * 45 - ((soilTemp-10)/30) * 2 * Math.PI * 45}
+                    strokeLinecap="round" transform="rotate(-90 60 60)" className="transition-all duration-1000" />
+                  <text x="60" y="60" textAnchor="middle" dominantBaseline="middle" className="text-lg font-bold font-inter fill-foreground">
+                    {soilTemp.toFixed(1)}°C
+                  </text>
+                </svg>
+                <p className="text-sm font-medium mt-1">Soil Temp</p>
+              </div>
             </div>
             <div className="mt-6">
               <p className="text-sm font-medium mb-2">{t("dash.ph")}</p>
@@ -102,23 +147,23 @@ const SoilAnalysis: React.FC = () => {
         </Card>
 
         {/* Condition Summary */}
-        <Card className="col-span-5 bg-card/95">
+        <Card className="col-span-5 bg-card/95 max-h-[500px] overflow-hidden flex flex-col">
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
               <Leaf className="h-5 w-5 text-primary" />
               {t("soil.condition")}
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="space-y-2 overflow-y-auto flex-1">
             {conditions.map((c) => (
-              <div key={c.key} className={`flex items-start gap-3 p-3 rounded-lg ${
+              <div key={c.key} className={`flex items-start gap-2 p-2 rounded-lg ${
                 c.status === "warning" ? "bg-warning/5 border-l-4 border-warning" :
                 c.status === "good" ? "bg-success/5 border-l-4 border-success" :
                 c.status === "medium" ? "bg-accent/5 border-l-4 border-accent" :
                 "bg-info/5 border-l-4 border-info"
               }`}>
                 {c.icon}
-                <p className="text-sm">{t(c.key)}</p>
+                <p className="text-xs">{t(c.key)}</p>
               </div>
             ))}
           </CardContent>
@@ -132,10 +177,10 @@ const SoilAnalysis: React.FC = () => {
           <CardContent>
             <p className="text-sm leading-relaxed">
               {lang === "hi"
-                ? "आपकी मिट्टी में नाइट्रोजन की कमी है जो फसल वृद्धि को प्रभावित कर सकती है। दलहनी फसलें (जैसे सोयाबीन, अरहर) लगाने से मिट्टी में प्राकृतिक रूप से नाइट्रोजन बढ़ेगा। फॉस्फोरस का स्तर अच्छा है। पोटैशियम मध्यम है - पोटाश खाद से सुधार होगा। pH थोड़ा अम्लीय है, चूना डालने से संतुलन बनेगा।"
+                ? "आपकी मिट्टी में नाइट्रोजन की कमी है जो फसल वृद्धि को प्रभावित कर सकती है। दलहनी फसलें (जैसे सोयाबीन, अरहर) लगाने से मिट्टी में प्राकृतिक रूप से नाइट्रोजन बढ़ेगा। फॉस्फोरस का स्तर अच्छा है। पोटैशियम मध्यम है - पोटाश खाद से सुधार होगा। pH थोड़ा अम्लीय है, चूना डालने से संतुलन बनेगा। EC सामान्य है जो अधिकतर फसलों के लिए उपयुक्त है। मिट्टी की नमी पर्याप्त है — अभी सिंचाई की जरूरत नहीं है। मिट्टी का तापमान बीज अंकुरण के लिए अनुकूल है।"
                 : lang === "mr"
-                ? "तुमच्या मातीत नायट्रोजनची कमतरता आहे जी पिकाच्या वाढीवर परिणाम करू शकते. कडधान्य पिके (जसे सोयाबीन, तूर) लावल्याने मातीत नैसर्गिकरित्या नायट्रोजन वाढेल. फॉस्फरसची पातळी चांगली आहे. पोटॅशियम मध्यम आहे — पोटॅश खताने सुधारणा होईल. pH किंचित आम्लधर्मी आहे, चुना वापरल्याने संतुलन साधले जाईल."
-                : "Your soil has a nitrogen deficiency that can affect crop growth. Planting legume crops (like soybean, pigeon pea) will naturally increase nitrogen in the soil. Phosphorus levels are adequate — no immediate action needed. Potassium is moderate — adding potash fertilizer will improve it. pH is slightly acidic — applying lime will help balance it. Overall, your soil is suitable for Kharif crops with minor amendments."}
+                ? "तुमच्या मातीत नायट्रोजनची कमतरता आहे जी पिकाच्या वाढीवर परिणाम करू शकते. कडधान्य पिके (जसे सोयाबीन, तूर) लावल्याने मातीत नैसर्गिकरित्या नायट्रोजन वाढेल. फॉस्फरसची पातळी चांगली आहे. पोटॅशियम मध्यम आहे — पोटॅश खताने सुधारणा होईल. pH किंचित आम्लधर्मी आहे, चुना वापरल्याने संतुलन साधले जाईल. EC सामान्य आहे — बहुतेक पिकांसाठी योग्य. मातीतील ओलावा पुरेसा आहे — आता सिंचनाची गरज नाही. मातीचे तापमान बियाणे उगवणासाठी योग्य आहे."
+                : "Your soil has a nitrogen deficiency that can affect crop growth. Planting legume crops (like soybean, pigeon pea) will naturally increase nitrogen in the soil. Phosphorus levels are adequate — no immediate action needed. Potassium is moderate — adding potash fertilizer will improve it. pH is slightly acidic — applying lime will help balance it. EC (Electrical Conductivity) is normal, suitable for most crops. Soil moisture is adequate — no irrigation needed at the moment. Soil temperature is optimal for seed germination. Overall, your soil is suitable for Kharif crops with minor amendments."}
             </p>
           </CardContent>
         </Card>

@@ -3,14 +3,14 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { useFarmLocation, maharashtraLocations } from "@/contexts/FarmLocationContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { Globe, Scale, MapPin, Wifi, RefreshCw, Save, CheckCircle, Loader2, Navigation, AlertCircle, Bot, Key, ExternalLink } from "lucide-react";
+import { Globe, Scale, MapPin, Wifi, RefreshCw, Save, CheckCircle, Loader2, Navigation, AlertCircle } from "lucide-react";
 import { Language } from "@/i18n/translations";
 import { toast } from "@/hooks/use-toast";
-import { setGeminiApiKey, isGeminiConfigured, getGeminiApiKeyMasked } from "@/hooks/useGemini";
+
 
 const Settings: React.FC = () => {
   const { language, setLanguage, t } = useLanguage();
@@ -18,21 +18,7 @@ const Settings: React.FC = () => {
   const [unit, setUnit] = useState("quintal");
   const [sensorPaired, setSensorPaired] = useState(true);
   const [autoRefresh, setAutoRefresh] = useState(true);
-  const [apiKey, setApiKey] = useState("");
-  const [isApiKeyConfigured, setIsApiKeyConfigured] = useState(false);
 
-  useEffect(() => {
-    setIsApiKeyConfigured(isGeminiConfigured());
-  }, []);
-
-  const handleSaveApiKey = () => {
-    if (apiKey.trim().length > 0) {
-      setGeminiApiKey(apiKey);
-      setIsApiKeyConfigured(true);
-      setApiKey("");
-      toast({ title: language === "hi" ? "API Key सहेजी गई!" : language === "mr" ? "API Key जतन झाली!" : "API Key saved!" });
-    }
-  };
 
   const handleDetectLocation = async () => {
     await detectLocation();
@@ -194,85 +180,6 @@ const Settings: React.FC = () => {
             <div className="flex items-center justify-between">
               <span className="text-base">{language === "hi" ? "स्वचालित रिफ्रेश (हर 5 मिनट)" : language === "mr" ? "स्वयंचलित रिफ्रेश (दर 5 मिनिटांनी)" : "Auto refresh (every 5 minutes)"}</span>
               <Switch checked={autoRefresh} onCheckedChange={setAutoRefresh} />
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Gemini API Key - Full Width */}
-        <Card className="bg-card/95 col-span-2 border-2 border-purple-200">
-          <CardHeader className="bg-gradient-to-r from-purple-50 to-indigo-50">
-            <CardTitle className="text-lg flex items-center justify-between">
-              <span className="flex items-center gap-2">
-                <Bot className="h-5 w-5 text-purple-600" />
-                {language === "hi" ? "AI वॉयस बॉट (Gemini)" : language === "mr" ? "AI व्हॉइस बॉट (Gemini)" : "AI Voice Bot (Gemini)"}
-              </span>
-              {isApiKeyConfigured ? (
-                <Badge className="bg-green-500 text-white">
-                  <CheckCircle className="h-3 w-3 mr-1" />
-                  {language === "hi" ? "सक्रिय" : language === "mr" ? "सक्रिय" : "Active"}
-                </Badge>
-              ) : (
-                <Badge variant="destructive">
-                  {language === "hi" ? "कॉन्फ़िगर नहीं" : language === "mr" ? "कॉन्फिगर नाही" : "Not Configured"}
-                </Badge>
-              )}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4 pt-4">
-            <p className="text-sm text-muted-foreground">
-              {language === "hi" 
-                ? "वॉयस बॉट का उपयोग करने के लिए, नीचे अपनी मुफ्त Gemini API key दर्ज करें।"
-                : language === "mr"
-                ? "व्हॉइस बॉट वापरण्यासाठी, खाली तुमची मोफत Gemini API key प्रविष्ट करा."
-                : "To use the voice bot, enter your free Gemini API key below."}
-            </p>
-            
-            {isApiKeyConfigured && (
-              <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-                <p className="text-sm text-green-700 flex items-center gap-2">
-                  <Key className="h-4 w-4" />
-                  {language === "hi" ? "वर्तमान Key:" : language === "mr" ? "सध्याची Key:" : "Current Key:"} {getGeminiApiKeyMasked()}
-                </p>
-              </div>
-            )}
-
-            <div className="flex gap-2">
-              <Input
-                type="password"
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-                placeholder={language === "hi" ? "Gemini API Key यहाँ पेस्ट करें..." : language === "mr" ? "Gemini API Key येथे पेस्ट करा..." : "Paste Gemini API Key here..."}
-                className="flex-1 h-11"
-              />
-              <Button 
-                onClick={handleSaveApiKey}
-                disabled={!apiKey.trim()}
-                className="bg-purple-600 hover:bg-purple-700 h-11"
-              >
-                <Save className="h-4 w-4 mr-1.5" />
-                {language === "hi" ? "सहेजें" : language === "mr" ? "जतन" : "Save"}
-              </Button>
-            </div>
-
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-              <p className="text-sm text-blue-700 mb-2 font-medium">
-                {language === "hi" ? "मुफ्त API Key कैसे प्राप्त करें:" : language === "mr" ? "मोफत API Key कशी मिळवावी:" : "How to get a free API Key:"}
-              </p>
-              <ol className="text-xs text-blue-600 space-y-1 list-decimal list-inside">
-                <li>{language === "hi" ? "Google AI Studio पर जाएं" : language === "mr" ? "Google AI Studio वर जा" : "Go to Google AI Studio"}</li>
-                <li>{language === "hi" ? "अपने Google खाते से साइन इन करें" : language === "mr" ? "तुमच्या Google खात्याने साइन इन करा" : "Sign in with your Google account"}</li>
-                <li>{language === "hi" ? "'Get API Key' पर क्लिक करें" : language === "mr" ? "'Get API Key' वर क्लिक करा" : "Click 'Get API Key'"}</li>
-                <li>{language === "hi" ? "Key को यहाँ कॉपी और पेस्ट करें" : language === "mr" ? "Key इथे कॉपी आणि पेस्ट करा" : "Copy and paste the key here"}</li>
-              </ol>
-              <a 
-                href="https://aistudio.google.com/apikey" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 mt-3 text-sm font-medium text-purple-600 hover:text-purple-700"
-              >
-                <ExternalLink className="h-4 w-4" />
-                {language === "hi" ? "Google AI Studio खोलें" : language === "mr" ? "Google AI Studio उघडा" : "Open Google AI Studio"}
-              </a>
             </div>
           </CardContent>
         </Card>

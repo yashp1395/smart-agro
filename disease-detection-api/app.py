@@ -166,8 +166,21 @@ DEFAULT_INFO = {
     "weather": {"en": "Monitor weather conditions for disease-favorable periods", "hi": "रोग के अनुकूल अवधि के लिए मौसम की स्थिति की निगरानी करें", "mr": "रोगाला अनुकूल काळासाठी हवामान परिस्थितीवर लक्ष ठेवा"}
 }
 
-# Model setup
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+# Model setup - Force CPU to avoid CUDA busy errors, or handle gracefully
+def get_device():
+    """Get available device, falling back to CPU if CUDA is unavailable or busy"""
+    if torch.cuda.is_available():
+        try:
+            # Test if CUDA is actually usable
+            torch.cuda.current_device()
+            torch.cuda.empty_cache()
+            return torch.device("cuda")
+        except Exception as e:
+            print(f"CUDA available but not usable: {e}. Falling back to CPU.")
+    return torch.device("cpu")
+
+device = get_device()
+print(f"Using device: {device}")
 model = None
 model_trained = False  # Flag to track if model has proper weights
 
@@ -307,8 +320,8 @@ def load_model():
     for path in model_paths:
         if os.path.exists(path):
             try:
-                # Load state dict to check its format
-                state_dict = torch.load(path, map_location=device)
+                # Always load to CPU first, then transfer to device (avoids CUDA issues)
+                state_dict = torch.load(path, map_location='cpu')
                 
                 # Check if state_dict has fc.1 keys (Sequential architecture)
                 has_sequential_fc = any(k.startswith('fc.1') for k in state_dict.keys())
@@ -329,14 +342,18 @@ def load_model():
                 
                 if path.endswith('.ckpt'):
                     # PyTorch Lightning checkpoint
-                    checkpoint = torch.load(path, map_location=device)
+                    checkpoint = torch.load(path, map_location='cpu')
                     state_dict = {k.replace('model.', ''): v for k, v in checkpoint['state_dict'].items() if k.startswith('model.')}
                 
                 model.load_state_dict(state_dict, strict=True)
-                model.to(device)
+                try:
+                    model.to(device)
+                except Exception as device_err:
+                    print(f"Could not move model to {device}: {device_err}. Using CPU.")
+                    model.to(torch.device('cpu'))
                 model.eval()
                 model_trained = True
-                print(f"Loaded trained model from {path}")
+                print(f"Loaded trained model from {path} on {next(model.parameters()).device}")
                 return
             except Exception as e:
                 print(f"Could not load {path}: {e}")
@@ -350,7 +367,11 @@ def load_model():
     num_features = model.fc.in_features
     model.fc = nn.Linear(num_features, len(DISEASE_CLASSES))
     
-    model.to(device)
+    try:
+        model.to(device)
+    except Exception as device_err:
+        print(f"Could not move fallback model to {device}: {device_err}. Using CPU.")
+        model.to(torch.device('cpu'))
     model.eval()
     model_trained = False  # Mark as not properly trained
 
@@ -446,7 +467,9 @@ async def predict_disease(file: UploadFile = File(...)):
             ]
         else:
             # Use trained model for prediction
-            input_tensor = transform(image).unsqueeze(0).to(device)
+            # Get model's actual device
+            model_device = next(model.parameters()).device
+            input_tensor = transform(image).unsqueeze(0).to(model_device)
             
             with torch.no_grad():
                 outputs = model(input_tensor)

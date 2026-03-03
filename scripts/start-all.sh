@@ -116,7 +116,7 @@ start_crop_prediction() {
         source venv2/bin/activate
     fi
     
-    python app.py > "$LOG_DIR/crop-prediction.log" 2>&1 &
+    python3 app.py > "$LOG_DIR/crop-prediction.log" 2>&1 &
     echo $! >> "$PID_FILE"
     
     cd "$PROJECT_ROOT"

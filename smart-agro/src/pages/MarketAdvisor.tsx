@@ -1,5 +1,6 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useFarmLocation } from "@/contexts/FarmLocationContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -16,14 +17,22 @@ import { useMandiPrices, formatPrice, formatMandiDate, maharashtraDistricts, Dat
 const MarketAdvisor: React.FC = () => {
   const { language, t } = useLanguage();
   const lang = language as Language;
+  const { location } = useFarmLocation();
   
   // State for prediction section
   const [selectedCrop, setSelectedCrop] = useState("Soybean");
   
-  // State for real-time mandi prices
-  const [selectedDistrict, setSelectedDistrict] = useState<string>("all");
+  // State for real-time mandi prices - initialized from user's location
+  const [selectedDistrict, setSelectedDistrict] = useState<string>(location.district || "all");
   const [selectedCommodity, setSelectedCommodity] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Update district when location changes
+  useEffect(() => {
+    if (location.district && maharashtraDistricts.includes(location.district)) {
+      setSelectedDistrict(location.district);
+    }
+  }, [location.district]);
 
   // Fetch mandi data from Agmarknet
   const { data: mandiData, loading, error, total, refetch, commodities, usingFallback, dataSource } = useMandiPrices({
